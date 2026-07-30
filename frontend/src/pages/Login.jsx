@@ -11,33 +11,26 @@ function Login() {
     const [password, setPassword] = useState("");
 
     async function handleLogin() {
+    try {
+        const res = await login({
+        email,
+        password,
+        });
 
-        try {
+        localStorage.setItem(
+        "token",
+        res.data.access_token
+        );
 
-            const res = await login({
+        alert("Login Successful!");
 
-                email,
+        navigate("/dashboard");
+    } catch (err) {
+        console.log(err);
 
-                password
-
-            });
-
-            localStorage.setItem(
-                "token",
-                res.data.access_token
-            );
-
-            navigate("/dashboard");
-
-        }
-
-        catch {
-
-            alert("Invalid Credentials");
-
-        }
-
+        alert("Invalid Email or Password");
     }
+}
 
     return (
 
