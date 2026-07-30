@@ -20,8 +20,81 @@ class User(Base):
 
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    folders = relationship("Folder", back_populates="owner")
+    folders = relationship(
+        "Folder",
+        back_populates="owner",
+        cascade="all, delete-orphan"
+    )
 
-    documents = relationship("Document", back_populates="owner")
+    documents = relationship(
+        "Document",
+        back_populates="owner",
+        cascade="all, delete-orphan"
+    )
 
-    planners = relationship("Planner", back_populates="owner")
+    planners = relationship(
+        "Planner",
+        back_populates="owner",
+        cascade="all, delete-orphan"
+    )
+
+    assignments = relationship(
+        "Assignment",
+        back_populates="owner",
+        cascade="all, delete-orphan"
+    )
+
+    attendance = relationship(
+        "Attendance",
+        back_populates="owner",
+        cascade="all, delete-orphan"
+    )
+
+    deadlines = relationship(
+        "Deadline",
+        back_populates="owner",
+        cascade="all, delete-orphan"
+    )
+
+    notifications = relationship(
+        "Notification",
+        back_populates="owner",
+        cascade="all, delete-orphan"
+    )
+
+    study_sessions = relationship(
+        "StudySession",
+        back_populates="owner",
+        cascade="all, delete-orphan"
+    )
+
+    pomodoro_sessions = relationship(
+        "Pomodoro",
+        back_populates="owner",
+        cascade="all, delete-orphan"
+    )
+
+    summaries = relationship(
+        "Summary",
+        back_populates="owner",
+        cascade="all, delete-orphan"
+    )
+
+    flashcards = relationship(
+        "Flashcard",
+        back_populates="owner",
+        cascade="all, delete-orphan"
+    )
+
+    progress = relationship(
+        "UserProgress",
+        back_populates="owner",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
+
+    ai_conversations = relationship(
+        "AIConversation",
+        back_populates="owner",
+        cascade="all, delete-orphan"
+    )

@@ -13,6 +13,13 @@ class Folder(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"))
 
-    owner = relationship("User", back_populates="folders")
+    owner = relationship(
+        "User",
+        back_populates="folders"
+    )
 
-    documents = relationship("Document", back_populates="folder")
+    documents = relationship(
+        "Document",
+        back_populates="folder",
+        cascade="all, delete-orphan"
+    )

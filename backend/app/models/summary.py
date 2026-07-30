@@ -9,8 +9,10 @@ class Summary(Base):
 
     id = Column(Integer, primary_key=True)
 
-    content = Column(Text)
+    content = Column(Text, nullable=False)
 
     document_id = Column(Integer, ForeignKey("documents.id"))
 
     user_id = Column(Integer, ForeignKey("users.id"))
+
+    owner = relationship("User", back_populates="summaries")

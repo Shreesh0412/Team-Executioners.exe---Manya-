@@ -1,10 +1,10 @@
 from sqlalchemy import Column, Integer, Float, ForeignKey
+from sqlalchemy.orm import relationship
 
 from app.core.database import Base
 
 
 class UserProgress(Base):
-
     __tablename__ = "user_progress"
 
     id = Column(Integer, primary_key=True)
@@ -16,3 +16,5 @@ class UserProgress(Base):
     streak = Column(Integer)
 
     user_id = Column(Integer, ForeignKey("users.id"))
+
+    owner = relationship("User", back_populates="progress")

@@ -10,30 +10,7 @@ router = APIRouter(
     prefix="/users",
     tags=["Users"]
 )
-
-
-def get_current_user(token: str, db: Session):
-
-    try:
-
-        payload = jwt.decode(
-            token,
-            settings.SECRET_KEY,
-            algorithms=[settings.ALGORITHM]
-        )
-
-        email = payload.get("sub")
-
-        if email is None:
-            return None
-
-    except JWTError:
-        return None
-
-    user = db.query(User).filter(User.email == email).first()
-
-    return user
-
+from app.core.dependencies import get_current_user
 
 @router.get("/")
 def get_all_users(db: Session = Depends(get_db)):
@@ -43,7 +20,10 @@ def get_all_users(db: Session = Depends(get_db)):
     return users
 
 
-@router.get("/{user_id}")
+@router.get(
+    "/{user_id}",
+    response_model=UserResponse
+)
 def get_user(user_id: int, db: Session = Depends(get_db)):
 
     user = db.query(User).filter(User.id == user_id).first()
@@ -71,6 +51,7 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     db.delete(user)
     db.commit()
 
-    return {
-        "message": "User deleted successfully"
-    }
+    return{
+    "success": True,
+    "message": "User deleted successfully"
+}
