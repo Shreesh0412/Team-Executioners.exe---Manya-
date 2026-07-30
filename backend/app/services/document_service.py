@@ -22,10 +22,7 @@ def upload_document(
     folder_id: int | None,
     user_id: int,
 ) -> Document:
-    """
-    Upload a PDF document, save it to disk, extract its text,
-    and store its metadata in the database.
-    """
+
     if file.content_type != "application/pdf":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -38,6 +35,9 @@ def upload_document(
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
+    file_size = os.path.getsize(file_path)
+    mime_type = file.content_type
+
     document = Document(
         title=title,
         filename=unique_filename,
@@ -45,6 +45,9 @@ def upload_document(
         subject=subject,
         folder_id=folder_id,
         user_id=user_id,
+        file_size=file_size,
+        mime_type=mime_type,
+        extracted=False,
     )
 
     try:
@@ -175,7 +178,7 @@ def recent_documents(
     return (
         db.query(Document)
         .filter(Document.user_id == user_id)
-        .order_by(Document.uploaded_at.desc())
+        .order_by(Document.created_at.desc())
         .limit(10)
         .all()
     )
