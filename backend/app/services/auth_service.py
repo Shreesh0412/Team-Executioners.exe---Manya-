@@ -7,14 +7,14 @@ from app.core.security import hash_password, verify_password
 from app.core.token import create_access_token
 
 
-def get_user_by_email(db: Session, email: str):
+def get_user_by_email(db: Session, email: str) -> User | None:
     """
     Fetch a user by email.
     """
     return db.query(User).filter(User.email == email).first()
 
 
-def register_user(db: Session, user: UserCreate):
+def register_user(db: Session, user: UserCreate) -> User:
     """
     Register a new user.
     """
@@ -34,14 +34,19 @@ def register_user(db: Session, user: UserCreate):
         is_verified=False
     )
 
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    try:
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+
+    except Exception:
+        db.rollback()
+        raise
 
     return db_user
 
 
-def authenticate_user(db: Session, user: UserLogin):
+def authenticate_user(db: Session, user: UserLogin) -> User:
     """
     Verify email and password.
     """
@@ -63,14 +68,14 @@ def authenticate_user(db: Session, user: UserLogin):
     return db_user
 
 
-def login_user(db: Session, user: UserLogin):
+def login_user(db: Session, user: UserLogin) -> dict:
     """
     Authenticate user and generate JWT token.
     """
 
     db_user = authenticate_user(db, user)
 
-    token = create_access_token(
+    access_token = create_access_token(
         {
             "sub": db_user.email,
             "user_id": db_user.id
@@ -78,11 +83,12 @@ def login_user(db: Session, user: UserLogin):
     )
 
     return {
-        "access_token": token,
+        "access_token": access_token,
         "token_type": "bearer",
         "user": {
             "id": db_user.id,
             "name": db_user.name,
-            "email": db_user.email
+            "email": db_user.email,
+            "is_verified": db_user.is_verified
         }
     }
