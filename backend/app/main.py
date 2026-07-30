@@ -1,18 +1,20 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth
+from app.api import auth, users
 from app.core.database import Base, engine
+from app.utils.constants import APP_NAME, API_VERSION
+from app.utils.responses import success_response
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="CourseMate API",
+    title=APP_NAME,
     description="AI-powered study planner and organiser backend",
-    version="1.0.0",
+    version=API_VERSION,
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
 )
 
 # CORS Configuration
@@ -31,15 +33,17 @@ app.add_middleware(
 
 # Include Routes
 app.include_router(auth.router)
+app.include_router(users.router)
 
 
 @app.get("/", tags=["Root"])
 def root():
-    return {
-        "success": True,
-        "message": "Welcome to CourseMate Backend 🚀",
-        "version": "1.0.0"
-    }
+    return success_response(
+        message="Welcome to CourseMate Backend 🚀",
+        data={
+            "version": API_VERSION
+        }
+    )
 
 
 @app.get("/health", tags=["Health"])
