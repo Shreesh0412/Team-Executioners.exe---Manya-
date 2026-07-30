@@ -1,10 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.user import UserResponse
+from app.services.user_service import (
+    delete_user,
+    get_all_users,
+    get_user_by_id,
+)
 
 router = APIRouter(
     prefix="/users",
@@ -15,52 +20,51 @@ router = APIRouter(
 @router.get(
     "/",
     response_model=list[UserResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Get all users",
 )
-def get_all_users(
+def read_all_users(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-):
-    return db.query(User).all()
+) -> list[UserResponse]:
+    """
+    Retrieve all registered users.
+
+    Authentication required.
+    """
+    return get_all_users(db)
 
 
 @router.get(
     "/{user_id}",
     response_model=UserResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get user by ID",
 )
-def get_user(
+def read_user(
     user_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-):
-    user = db.query(User).filter(User.id == user_id).first()
-
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
-        )
-
-    return user
+) -> UserResponse:
+    """
+    Retrieve a user by their ID.
+    """
+    return get_user_by_id(db, user_id)
 
 
-@router.delete("/{user_id}")
-def delete_user(
+@router.delete(
+    "/{user_id}",
+    status_code=status.HTTP_200_OK,
+    summary="Delete user",
+)
+def remove_user(
     user_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-):
-    user = db.query(User).filter(User.id == user_id).first()
+) -> dict:
+    """
+    Delete a user.
 
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
-        )
-
-    db.delete(user)
-    db.commit()
-
-    return {
-        "success": True,
-        "message": "User deleted successfully",
-    }
+    Only authenticated users can perform this action.
+    """
+    return delete_user(db, user_id)

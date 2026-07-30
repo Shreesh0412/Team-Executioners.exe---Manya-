@@ -1,6 +1,11 @@
-from typing import List, Optional
-
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    UploadFile,
+    status,
+)
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -23,15 +28,23 @@ router = APIRouter(
 @router.post(
     "/upload",
     response_model=DocumentResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Upload a PDF document",
 )
 def upload_pdf(
     title: str = Form(...),
-    subject: Optional[str] = Form(None),
-    folder_id: Optional[int] = Form(None),
+    subject: str | None = Form(None),
+    folder_id: int | None = Form(None),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-):
+) -> DocumentResponse:
+    """
+    Upload a PDF document.
+
+    The uploaded file is stored on the server and its metadata is saved
+    in the database.
+    """
     return upload_document(
         db=db,
         file=file,
@@ -44,27 +57,35 @@ def upload_pdf(
 
 @router.get(
     "/",
-    response_model=List[DocumentResponse],
+    response_model=list[DocumentResponse],
+    status_code=status.HTTP_200_OK,
+    summary="List all documents",
 )
 def list_documents(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-):
-    return get_documents(
-        db=db,
-        user_id=current_user.id,
-    )
+) -> list[DocumentResponse]:
+    """
+    Retrieve all documents belonging to the authenticated user.
+    """
+    return get_documents(db, current_user.id)
+
 
 
 @router.get(
     "/{document_id}",
     response_model=DocumentResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get document by ID",
 )
-def get_single_document(
+def read_document(
     document_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-):
+) -> DocumentResponse:
+    """
+    Retrieve a single document belonging to the authenticated user.
+    """
     return get_document(
         db=db,
         document_id=document_id,
@@ -72,12 +93,19 @@ def get_single_document(
     )
 
 
-@router.delete("/{document_id}")
+@router.delete(
+    "/{document_id}",
+    status_code=status.HTTP_200_OK,
+    summary="Delete document",
+)
 def remove_document(
     document_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-):
+) -> dict:
+    """
+    Delete a document and remove its file from storage.
+    """
     return delete_document(
         db=db,
         document_id=document_id,

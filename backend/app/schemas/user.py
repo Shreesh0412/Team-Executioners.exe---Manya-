@@ -20,3 +20,16 @@ class UserResponse(UserBase):
     is_verified: bool
 
     model_config = ConfigDict(from_attributes=True)
+class LoggedInUser(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+    is_verified: bool
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+    user: LoggedInUser

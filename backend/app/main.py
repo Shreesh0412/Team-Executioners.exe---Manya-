@@ -5,6 +5,7 @@ from app.api import auth, users, documents
 from app.core.database import Base, engine
 from app.utils.constants import APP_NAME, API_VERSION
 from app.utils.responses import success_response
+from app.api import folders
 
 # Create FastAPI app FIRST
 app = FastAPI(
@@ -14,6 +15,10 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(documents.router)
+app.include_router(folders.router)
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
