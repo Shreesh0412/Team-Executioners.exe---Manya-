@@ -1,0 +1,22 @@
+export interface PlannerTask {
+  id: number;
+  title: string;
+  description: string;
+  due_date: string;
+  completed: boolean;
+  user_id: number;
+}
+
+export interface PomodoroSession {
+  id: number;
+  duration: number;
+  completed: boolean;
+  created_at: string;
+}
+
+export interface StickyNote {
+  id: number;
+  title: string;
+  content: string;
+  color: string;
+}

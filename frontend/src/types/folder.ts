@@ -1,8 +1,8 @@
-import { BaseEntity } from "./common";
-
-export interface Folder extends BaseEntity {
+export interface Folder {
+  id: number;
   name: string;
   user_id: number;
+  created_at: string;
 }
 
 export interface CreateFolderRequest {
