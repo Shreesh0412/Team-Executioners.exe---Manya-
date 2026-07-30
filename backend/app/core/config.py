@@ -1,18 +1,19 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    DATABASE_URL: str
 
-    DATABASE_URL:str
+    SECRET_KEY: str
 
-    SECRET_KEY:str
+    ALGORITHM: str = "HS256"
 
-    ALGORITHM:str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 120
 
-    ACCESS_TOKEN_EXPIRE_MINUTES:int
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=True
+    )
 
-    class Config:
-        env_file=".env"
 
-
-settings=Settings()
+settings = Settings()
