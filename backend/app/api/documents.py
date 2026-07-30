@@ -8,10 +8,10 @@ from app.core.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.document import DocumentResponse
 from app.services.document_service import (
-    delete_document,
-    get_document,
-    get_documents,
     upload_document,
+    get_documents,
+    get_document,
+    delete_document,
 )
 
 router = APIRouter(
@@ -50,7 +50,10 @@ def list_documents(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return get_documents(db, current_user.id)
+    return get_documents(
+        db=db,
+        user_id=current_user.id,
+    )
 
 
 @router.get(
@@ -63,9 +66,9 @@ def get_single_document(
     current_user: User = Depends(get_current_user),
 ):
     return get_document(
-        db,
-        document_id,
-        current_user.id,
+        db=db,
+        document_id=document_id,
+        user_id=current_user.id,
     )
 
 
@@ -76,7 +79,7 @@ def remove_document(
     current_user: User = Depends(get_current_user),
 ):
     return delete_document(
-        db,
-        document_id,
-        current_user.id,
+        db=db,
+        document_id=document_id,
+        user_id=current_user.id,
     )
