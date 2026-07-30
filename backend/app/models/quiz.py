@@ -1,21 +1,30 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
 
 
 class Quiz(Base):
-
     __tablename__ = "quizzes"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
 
-    title = Column(String)
+    title = Column(String(255), nullable=False)
 
-    document_id = Column(Integer, ForeignKey("documents.id"))
+    document_id = Column(
+        Integer,
+        ForeignKey("documents.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    document = relationship(
+        "Document",
+        back_populates="quizzes",
+    )
 
     questions = relationship(
-    "QuizQuestion",
-    back_populates="quiz",
-    cascade="all, delete-orphan"
-)
+        "QuizQuestion",
+        back_populates="quiz",
+        cascade="all, delete-orphan",
+    )

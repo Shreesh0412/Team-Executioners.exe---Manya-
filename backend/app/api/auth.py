@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -36,7 +37,6 @@ def register(
     - Hashes the password before saving.
     - Raises an error if the email already exists.
     """
-
     return register_user(db, user)
 
 
@@ -44,20 +44,40 @@ def register(
     "/login",
     response_model=TokenResponse,
     status_code=status.HTTP_200_OK,
-    summary="Authenticate user",
-
+    summary="Login using JSON (Frontend)",
 )
 def login(
     user: UserLogin,
     db: Session = Depends(get_db),
 ) -> TokenResponse:
     """
-    Authenticate a user.
+    Login endpoint for frontend/mobile applications.
 
-    Returns:
-    - JWT access token
-    - Token type
-    - Logged-in user information
+    Request Body:
+    {
+        "email": "...",
+        "password": "..."
+    }
     """
     return login_user(db, user)
 
+
+@router.post(
+    "/token",
+    response_model=TokenResponse,
+    status_code=status.HTTP_200_OK,
+    summary="OAuth2 Login (Swagger)",
+)
+def login_oauth2(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
+) -> TokenResponse:
+    """
+    OAuth2 Password Flow endpoint used by Swagger UI.
+    """
+    user = UserLogin(
+        email=form_data.username,
+        password=form_data.password,
+    )
+
+    return login_user(db, user)

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Text, ForeignKey
+from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -7,14 +7,32 @@ from app.core.database import Base
 class Flashcard(Base):
     __tablename__ = "flashcards"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
 
     question = Column(Text, nullable=False)
 
     answer = Column(Text, nullable=False)
 
-    document_id = Column(Integer, ForeignKey("documents.id"))
+    document_id = Column(
+        Integer,
+        ForeignKey("documents.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
 
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
 
-    owner = relationship("User", back_populates="flashcards")
+    document = relationship(
+        "Document",
+        back_populates="flashcards",
+    )
+
+    owner = relationship(
+        "User",
+        back_populates="flashcards",
+    )
