@@ -22,3 +22,4 @@ pydantic-settings
 
 email-validator
 alembic
+python-jose[cryptography]

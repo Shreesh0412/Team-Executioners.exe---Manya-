@@ -5,6 +5,10 @@ from app.api import auth, users
 from app.core.database import Base, engine
 from app.utils.constants import APP_NAME, API_VERSION
 from app.utils.responses import success_response
+from app.api import auth, users, documents
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(documents.router)
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
