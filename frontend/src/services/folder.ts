@@ -1,25 +1,37 @@
 import api from "./api";
 import ENDPOINTS from "./endpoints";
 
-export interface FolderRequest {
-  name: string;
-}
+import {
+  Folder,
+  CreateFolderRequest,
+  UpdateFolderRequest,
+} from "@/types";
 
 export const getFolders = () => {
-  return api.get(ENDPOINTS.FOLDER.BASE);
+  return api.get<Folder[]>(ENDPOINTS.FOLDER.BASE);
 };
 
-export const createFolder = (data: FolderRequest) => {
-  return api.post(ENDPOINTS.FOLDER.BASE, data);
+export const createFolder = (
+  data: CreateFolderRequest
+) => {
+  return api.post<Folder>(
+    ENDPOINTS.FOLDER.BASE,
+    data
+  );
 };
 
 export const updateFolder = (
   id: number,
-  data: FolderRequest
+  data: UpdateFolderRequest
 ) => {
-  return api.put(`${ENDPOINTS.FOLDER.BASE}/${id}`, data);
+  return api.put<Folder>(
+    `${ENDPOINTS.FOLDER.BASE}/${id}`,
+    data
+  );
 };
 
 export const deleteFolder = (id: number) => {
-  return api.delete(`${ENDPOINTS.FOLDER.BASE}/${id}`);
+  return api.delete(
+    `${ENDPOINTS.FOLDER.BASE}/${id}`
+  );
 };
