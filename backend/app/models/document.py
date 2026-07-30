@@ -36,28 +36,60 @@ class Document(Base):
 
     text_path = Column(String)
 
-    uploaded_at = Column(
-        DateTime,
-        default=datetime.utcnow,
-    )
+ folder = relationship(
+    "Folder",
+    back_populates="documents",
+)
 
-    folder_id = Column(
-        Integer,
-        ForeignKey("folders.id"),
-        nullable=True,
-    )
+owner = relationship(
+    "User",
+    back_populates="documents",
+)
 
-    user_id = Column(
-        Integer,
-        ForeignKey("users.id"),
-    )
+summaries = relationship(
+    "Summary",
+    back_populates="document",
+    cascade="all, delete-orphan",
+)
 
-    folder = relationship(
-        "Folder",
-        back_populates="documents",
-    )
+flashcards = relationship(
+    "Flashcard",
+    back_populates="document",
+    cascade="all, delete-orphan",
+)
 
-    owner = relationship(
-        "User",
-        back_populates="documents",
-    )
+bookmarks = relationship(
+    "Bookmark",
+    back_populates="document",
+    cascade="all, delete-orphan",
+)
+
+highlights = relationship(
+    "Highlight",
+    back_populates="document",
+    cascade="all, delete-orphan",
+)
+
+annotations = relationship(
+    "Annotation",
+    back_populates="document",
+    cascade="all, delete-orphan",
+)
+
+sticky_notes = relationship(
+    "StickyNote",
+    back_populates="document",
+    cascade="all, delete-orphan",
+)
+
+quizzes = relationship(
+    "Quiz",
+    back_populates="document",
+    cascade="all, delete-orphan",
+)
+
+tags = relationship(
+    "DocumentTag",
+    back_populates="document",
+    cascade="all, delete-orphan",
+)
