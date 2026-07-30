@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -30,7 +30,7 @@ def read_all_users(
     """
     Retrieve all registered users.
 
-    Authentication required.
+    Authentication is required.
     """
     return get_all_users(db)
 
@@ -49,7 +49,10 @@ def read_user(
     """
     Retrieve a user by their ID.
     """
-    return get_user_by_id(db, user_id)
+    return get_user_by_id(
+        db=db,
+        user_id=user_id,
+    )
 
 
 @router.delete(
@@ -63,8 +66,16 @@ def remove_user(
     current_user: User = Depends(get_current_user),
 ) -> dict:
     """
-    Delete a user.
-
-    Only authenticated users can perform this action.
+    Delete the authenticated user's own account.
     """
-    return delete_user(db, user_id)
+
+    if user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only delete your own account.",
+        )
+
+    return delete_user(
+        db=db,
+        user_id=user_id,
+    )
