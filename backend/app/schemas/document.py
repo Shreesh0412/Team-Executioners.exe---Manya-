@@ -19,3 +19,6 @@ class DocumentResponse(DocumentBase):
     user_id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+class DocumentMove(BaseModel):
+    folder_id: int

@@ -13,6 +13,10 @@ from app.services.document_service import (
     get_documents,
     upload_document,
 )
+from app.schemas.document import DocumentMove
+from app.schemas.document import move_document
+from app.schemas.document import recent_documents
+from app.services.pdf_service import load_text
 
 router = APIRouter(
     prefix="/documents",
@@ -80,3 +84,53 @@ def remove_document(
         document_id,
         current_user.id,
     )
+
+@router.put(
+    "/{document_id}/move",
+    response_model=DocumentResponse,
+)
+def move(
+    document_id: int,
+    data: DocumentMove,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    return move_document(
+        db,
+        document_id,
+        data.folder_id,
+        current_user.id,
+    )
+
+@router.get(
+    "/recent",
+    response_model=list[DocumentResponse],
+)
+def recent(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    return recent_documents(
+        db,
+        current_user.id,
+    )
+@router.get("/{document_id}/text")
+def document_text(
+    document_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    document = get_document(
+        db,
+        document_id,
+        current_user.id,
+    )
+
+    return {
+
+        "text": load_text(document)
+
+    }

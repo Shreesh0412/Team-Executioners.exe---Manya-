@@ -6,6 +6,7 @@ from fastapi import UploadFile, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.models.document import Document
+from app.services.pdf_service import extract_text
 
 UPLOAD_DIR = "uploads/documents"
 
@@ -44,6 +45,15 @@ def upload_document(
     db.add(document)
     db.commit()
     db.refresh(document)
+    text_path = extract_text(document)
+
+document.text_path = text_path
+
+document.extracted = True
+
+db.commit()
+
+db.refresh(document)
 
     return document
 
@@ -85,3 +95,41 @@ def delete_document(db: Session, document_id: int, user_id: int):
     db.commit()
 
     return {"message": "Document deleted successfully."}
+
+def move_document(
+    db: Session,
+    document_id: int,
+    folder_id: int,
+    user_id: int,
+):
+
+    document = get_document(
+        db,
+        document_id,
+        user_id,
+    )
+
+    document.folder_id = folder_id
+
+    db.commit()
+
+    db.refresh(document)
+
+    return document
+
+def recent_documents(
+    db: Session,
+    user_id: int,
+):
+
+    return (
+        db.query(Document)
+        .filter(
+            Document.user_id == user_id
+        )
+        .order_by(
+            Document.uploaded_at.desc()
+        )
+        .limit(10)
+        .all()
+    )

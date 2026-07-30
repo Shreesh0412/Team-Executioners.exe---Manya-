@@ -1,55 +1,63 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
 from datetime import datetime
+
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+)
+
+from sqlalchemy.orm import relationship
 
 from app.core.database import Base
 
 
 class Document(Base):
+
     __tablename__ = "documents"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
 
-    title = Column(String)
+    title = Column(String, nullable=False)
 
-    filename = Column(String)
+    filename = Column(String, nullable=False)
 
-    file_path = Column(String)
+    file_path = Column(String, nullable=False)
 
     subject = Column(String)
 
-    last_page = Column(Integer, default=1)
+    file_size = Column(Integer)
 
-    uploaded_at = Column(DateTime, default=datetime.utcnow)
+    mime_type = Column(String)
 
-    user_id = Column(Integer, ForeignKey("users.id"))
+    extracted = Column(Boolean, default=False)
 
-    folder_id = Column(Integer, ForeignKey("folders.id"))
+    text_path = Column(String)
 
-    owner = relationship("User", back_populates="documents")
-
-    folder = relationship("Folder", back_populates="documents")
-
-    bookmarks = relationship(
-        "Bookmark",
-        back_populates="document",
-        cascade="all, delete-orphan"
+    uploaded_at = Column(
+        DateTime,
+        default=datetime.utcnow,
     )
 
-    highlights = relationship(
-        "Highlight",
-        back_populates="document",
-        cascade="all, delete-orphan"
+    folder_id = Column(
+        Integer,
+        ForeignKey("folders.id"),
+        nullable=True,
     )
 
-    annotations = relationship(
-        "Annotation",
-        back_populates="document",
-        cascade="all, delete-orphan"
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id"),
     )
 
-    sticky_notes = relationship(
-        "StickyNote",
-        back_populates="document",
-        cascade="all, delete-orphan"
+    folder = relationship(
+        "Folder",
+        back_populates="documents",
+    )
+
+    owner = relationship(
+        "User",
+        back_populates="documents",
     )
