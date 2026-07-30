@@ -12,17 +12,17 @@ from app.core.database import get_db
 from app.core.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.document import (
-    DocumentResponse,
     DocumentMove,
+    DocumentResponse,
     DocumentTextResponse,
 )
 from app.services.document_service import (
-    upload_document,
-    get_documents,
-    get_document,
     delete_document,
+    get_document,
+    get_documents,
     move_document,
     recent_documents,
+    upload_document,
 )
 from app.services.pdf_service import load_text
 
@@ -79,6 +79,25 @@ def list_documents(
 
 
 @router.get(
+    "/recent",
+    response_model=list[DocumentResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Recently uploaded documents",
+)
+def recent(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> list[DocumentResponse]:
+    """
+    Return recently uploaded documents.
+    """
+    return recent_documents(
+        db=db,
+        user_id=current_user.id,
+    )
+
+
+@router.get(
     "/{document_id}",
     response_model=DocumentResponse,
     status_code=status.HTTP_200_OK,
@@ -108,7 +127,7 @@ def remove_document(
     document_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-) -> dict:
+) -> dict[str, str | bool]:
     """
     Delete a document.
     """
@@ -143,25 +162,6 @@ def move(
 
 
 @router.get(
-    "/recent",
-    response_model=list[DocumentResponse],
-    status_code=status.HTTP_200_OK,
-    summary="Recently uploaded documents",
-)
-def recent(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-) -> list[DocumentResponse]:
-    """
-    Return recently uploaded documents.
-    """
-    return recent_documents(
-        db=db,
-        user_id=current_user.id,
-    )
-
-
-@router.get(
     "/{document_id}/text",
     response_model=DocumentTextResponse,
     status_code=status.HTTP_200_OK,
@@ -182,5 +182,5 @@ def document_text(
     )
 
     return DocumentTextResponse(
-        text=load_text(document)
+        text=load_text(document),
     )
