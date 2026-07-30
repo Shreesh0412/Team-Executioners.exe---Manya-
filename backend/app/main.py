@@ -7,8 +7,7 @@ from app.utils.constants import APP_NAME, API_VERSION
 from app.utils.responses import success_response
 from app.api import folders
 
-Base.metadata.create_all(bind=engine)
-
+# Create FastAPI app FIRST
 app = FastAPI(
     title=APP_NAME,
     description="AI-powered study planner and organiser backend",
@@ -20,6 +19,11 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(documents.router)
 app.include_router(folders.router)
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
+
+# CORS
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
@@ -33,17 +37,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Register routers
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(documents.router)
 
-@app.get("/")
+
+@app.get("/", tags=["Root"])
 def root():
     return success_response(
         message="Welcome to CourseMate Backend 🚀",
-        data={"version": API_VERSION},
+        data={
+            "version": API_VERSION
+        }
     )
 
-@app.get("/health")
-def health():
+
+@app.get("/health", tags=["Health"])
+def health_check():
     return {
         "status": "healthy",
-        "database": "connected",
+        "database": "connected"
     }
