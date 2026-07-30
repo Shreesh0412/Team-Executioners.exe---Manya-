@@ -1,7 +1,4 @@
-from datetime import datetime
-from typing import Optional
-
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class FolderBase(BaseModel):
@@ -19,8 +16,5 @@ class FolderUpdate(BaseModel):
 class FolderResponse(FolderBase):
     id: int
     user_id: int
-    created_at: datetime
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = ConfigDict(from_attributes=True)

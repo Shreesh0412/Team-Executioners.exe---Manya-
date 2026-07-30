@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class UserBase(BaseModel):
@@ -20,6 +20,8 @@ class UserResponse(UserBase):
     is_verified: bool
 
     model_config = ConfigDict(from_attributes=True)
+
+
 class LoggedInUser(BaseModel):
     id: int
     name: str

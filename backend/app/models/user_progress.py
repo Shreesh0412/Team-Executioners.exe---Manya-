@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, ForeignKey
+from sqlalchemy import Column, Float, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -9,12 +9,20 @@ class UserProgress(Base):
 
     id = Column(Integer, primary_key=True)
 
-    completion = Column(Float)
+    completion = Column(Float, default=0.0)
 
-    study_hours = Column(Float)
+    study_hours = Column(Float, default=0.0)
 
-    streak = Column(Integer)
+    streak = Column(Integer, default=0)
 
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id"),
+        unique=True,
+        nullable=False,
+    )
 
-    owner = relationship("User", back_populates="progress")
+    owner = relationship(
+        "User",
+        back_populates="progress",
+    )

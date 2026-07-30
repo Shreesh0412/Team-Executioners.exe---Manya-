@@ -7,7 +7,10 @@ from app.models.user import User
 from app.schemas.user import UserCreate, UserLogin
 
 
-def get_user_by_email(db: Session, email: str) -> User | None:
+def get_user_by_email(
+    db: Session,
+    email: str,
+) -> User | None:
     """
     Retrieve a user by email.
     """
@@ -24,7 +27,6 @@ def register_user(
     Raises:
         HTTPException: If the email is already registered.
     """
-
     existing_user = get_user_by_email(db, user.email)
 
     if existing_user:
@@ -45,9 +47,9 @@ def register_user(
         db.commit()
         db.refresh(db_user)
 
-    except Exception as exc:
+    except Exception:
         db.rollback()
-        raise exc
+        raise
 
     return db_user
 
@@ -62,16 +64,9 @@ def authenticate_user(
     Raises:
         HTTPException: If the credentials are invalid.
     """
-
     db_user = get_user_by_email(db, user.email)
 
-    if db_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password.",
-        )
-
-    if not verify_password(
+    if db_user is None or not verify_password(
         user.password,
         db_user.hashed_password,
     ):
@@ -90,15 +85,12 @@ def login_user(
     """
     Authenticate the user and generate an access token.
     """
-
     db_user = authenticate_user(db, user)
 
-    payload = {
-        "sub": db_user.email,
-        "user_id": db_user.id,
-    }
-
-    access_token = create_access_token(payload)
+    access_token = create_access_token(
+        user_id=db_user.id,
+        email=db_user.email,
+    )
 
     return {
         "access_token": access_token,
