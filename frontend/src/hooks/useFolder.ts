@@ -1,51 +1,66 @@
+import { useEffect, useState } from "react";
 import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-
-import {
-  createFolder,
-  deleteFolder,
   getFolders,
-} from "@/services";
+  createFolder,
+  renameFolder,
+  deleteFolder,
+} from "../services/folder";
+import { Folder } from "../types/folder";
 
-export function useFolders() {
-  return useQuery({
-    queryKey: ["folders"],
+export const useFolders = () => {
+  const [folders, setFolders] = useState<Folder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    queryFn: async () => {
-      const response = await getFolders();
+  const fetchFolders = async () => {
+    try {
+      setLoading(true);
+      const data = await getFolders();
+      setFolders(data);
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load folders");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      return response.data;
-    },
-  });
-}
+  useEffect(() => {
+    fetchFolders();
+  }, []);
 
-export function useCreateFolder() {
-  const queryClient = useQueryClient();
+  const addFolder = async (name: string) => {
+    const folder = await createFolder({ name });
 
-  return useMutation({
-    mutationFn: createFolder,
+    setFolders((prev) => [...prev, folder]);
+  };
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["folders"],
-      });
-    },
-  });
-}
+  const updateFolder = async (id: number, name: string) => {
+    const updated = await renameFolder(id, { name });
 
-export function useDeleteFolder() {
-  const queryClient = useQueryClient();
+    setFolders((prev) =>
+      prev.map((folder) =>
+        folder.id === id ? updated : folder
+      )
+    );
+  };
 
-  return useMutation({
-    mutationFn: deleteFolder,
+  const removeFolder = async (id: number) => {
+    await deleteFolder(id);
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["folders"],
-      });
-    },
-  });
-}
+    setFolders((prev) =>
+      prev.filter((folder) => folder.id !== id)
+    );
+  };
+
+  return {
+    folders,
+    loading,
+    error,
+    refresh: fetchFolders,
+    addFolder,
+    updateFolder,
+    removeFolder,
+  };
+};

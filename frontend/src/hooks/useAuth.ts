@@ -1,40 +1,58 @@
-import { useQuery } from "@tanstack/react-query";
-
-import { getCurrentUser } from "@/services";
-
-import { storage } from "@/utils";
+import { useState } from "react";
+import * as authApi from "../api/auth";
 
 export function useAuth() {
-  const token = storage.getToken();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ["current-user"],
+  async function login(email: string, password: string) {
+    try {
+      setLoading(true);
+      setError("");
 
-    queryFn: async () => {
-      const response = await getCurrentUser();
+      return await authApi.login({
+        email,
+        password,
+      });
+    } catch (err: any) {
+      setError(err.response?.data?.detail || "Login failed");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }
 
-      return response.data;
-    },
+  async function register(
+    name: string,
+    email: string,
+    password: string
+  ) {
+    try {
+      setLoading(true);
+      setError("");
 
-    enabled: !!token,
-  });
+      return await authApi.register({
+        name,
+        email,
+        password,
+      });
+    } catch (err: any) {
+      setError(err.response?.data?.detail || "Registration failed");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function logout() {
+    authApi.logout();
+  }
 
   return {
-    user: data,
-
-    token,
-
-    isAuthenticated: !!token,
-
-    isLoading,
-
+    login,
+    register,
+    logout,
+    loading,
     error,
-
-    refetch,
   };
 }
