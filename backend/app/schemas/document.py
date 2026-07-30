@@ -1,24 +1,27 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
 
 class DocumentBase(BaseModel):
     title: str
-    subject: Optional[str] = None
-    folder_id: Optional[int] = None
+    subject: str | None = None
+    folder_id: int | None = None
 
 
 class DocumentResponse(DocumentBase):
     id: int
     filename: str
     file_path: str
-    last_page: int
     uploaded_at: datetime
     user_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class DocumentMove(BaseModel):
     folder_id: int
+
+
+class DocumentTextResponse(BaseModel):
+    text: str

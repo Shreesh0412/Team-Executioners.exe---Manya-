@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from app.schemas.user import UserResponse
+from app.schemas.user import LoggedInUser
 
 
 class Token(BaseModel):
@@ -9,7 +9,7 @@ class Token(BaseModel):
 
 
 class LoginResponse(Token):
-    user: UserResponse
+    user: LoggedInUser
 
 
 class TokenData(BaseModel):
