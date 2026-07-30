@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from datetime import datetime
 
 from app.core.database import Base
@@ -16,3 +17,5 @@ class Pomodoro(Base):
     session_time = Column(DateTime, default=datetime.utcnow)
 
     user_id = Column(Integer, ForeignKey("users.id"))
+
+    owner = relationship("User", back_populates="pomodoro_sessions")

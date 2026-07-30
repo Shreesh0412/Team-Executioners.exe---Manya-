@@ -14,4 +14,8 @@ class Quiz(Base):
 
     document_id = Column(Integer, ForeignKey("documents.id"))
 
-    questions = relationship("QuizQuestion", back_populates="quiz")
+    questions = relationship(
+    "QuizQuestion",
+    back_populates="quiz",
+    cascade="all, delete-orphan"
+)

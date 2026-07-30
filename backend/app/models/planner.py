@@ -13,6 +13,13 @@ class Planner(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"))
 
-    owner = relationship("User", back_populates="planners")
+    owner = relationship(
+        "User",
+        back_populates="planners"
+    )
 
-    tasks = relationship("Task", back_populates="planner")
+    tasks = relationship(
+        "Task",
+        back_populates="planner",
+        cascade="all, delete-orphan"
+    )

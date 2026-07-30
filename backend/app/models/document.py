@@ -30,10 +30,26 @@ class Document(Base):
 
     folder = relationship("Folder", back_populates="documents")
 
-    bookmarks = relationship("Bookmark", back_populates="document")
+    bookmarks = relationship(
+        "Bookmark",
+        back_populates="document",
+        cascade="all, delete-orphan"
+    )
 
-    highlights = relationship("Highlight", back_populates="document")
+    highlights = relationship(
+        "Highlight",
+        back_populates="document",
+        cascade="all, delete-orphan"
+    )
 
-    annotations = relationship("Annotation", back_populates="document")
+    annotations = relationship(
+        "Annotation",
+        back_populates="document",
+        cascade="all, delete-orphan"
+    )
 
-    sticky_notes = relationship("StickyNote", back_populates="document")
+    sticky_notes = relationship(
+        "StickyNote",
+        back_populates="document",
+        cascade="all, delete-orphan"
+    )
