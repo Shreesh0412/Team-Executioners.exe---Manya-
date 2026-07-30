@@ -1,30 +1,40 @@
-import fitz
 import os
 
+import fitz
 
-TEXT_FOLDER = "uploads/extracted_text"
+from app.core.config import settings
+from app.models.document import Document
 
-os.makedirs(TEXT_FOLDER, exist_ok=True)
+
+os.makedirs(settings.EXTRACTED_TEXT_DIR, exist_ok=True)
 
 
-def extract_text(document):
+def extract_text(document: Document) -> str:
+    """
+    Extract text from a PDF document and save it as a text file.
+    """
+    try:
+        pdf = fitz.open(document.file_path)
+    except Exception as exc:
+        raise ValueError("Failed to open PDF. The file may be corrupted.") from exc
 
-    pdf = fitz.open(document.file_path)
+    try:
+        full_text = ""
 
-    full_text = ""
+        for page in pdf:
+            text = page.get_text().strip()
+            if text:
+                full_text += text + "\n"
 
-    for page in pdf:
+        if not full_text.strip():
+            full_text = "No extractable text found in this PDF."
 
-        full_text += page.get_text()
-
-        full_text += "\n"
-
-    pdf.close()
+    finally:
+        pdf.close()
 
     text_filename = f"{document.id}.txt"
-
     text_path = os.path.join(
-        TEXT_FOLDER,
+        settings.EXTRACTED_TEXT_DIR,
         text_filename,
     )
 
@@ -33,17 +43,21 @@ def extract_text(document):
         "w",
         encoding="utf-8",
     ) as file:
-
         file.write(full_text)
 
     return text_path
 
-def load_text(document):
+
+def load_text(document: Document) -> str:
+    """
+    Load extracted text for a document.
+    """
+    if not document.text_path or not os.path.exists(document.text_path):
+        raise FileNotFoundError("Extracted text file not found.")
 
     with open(
         document.text_path,
         "r",
         encoding="utf-8",
     ) as file:
-
         return file.read()
