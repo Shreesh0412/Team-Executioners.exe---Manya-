@@ -1,0 +1,15 @@
+"""
+Application-wide constants.
+"""
+
+APP_NAME = "CourseMate"
+
+API_VERSION = "v1"
+
+DEFAULT_PAGE_SIZE = 20
+
+MAX_PAGE_SIZE = 100
+
+DEFAULT_POMODORO_MINUTES = 25
+
+DEFAULT_BREAK_MINUTES = 5
