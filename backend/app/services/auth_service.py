@@ -35,10 +35,18 @@ def register_user(
             detail="Email already registered.",
         )
 
+    try:
+        hashed = hash_password(user.password)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Could not process password. Please try a different password or contact support.",
+        )
+
     db_user = User(
         name=user.name,
         email=user.email,
-        hashed_password=hash_password(user.password),
+        hashed_password=hashed,
         is_verified=False,
     )
 
