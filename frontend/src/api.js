@@ -89,4 +89,26 @@ export const deleteDocument = (id) => API.delete(`/documents/${id}`);
 export const moveDocument = (id, folderId) =>
   API.put(`/documents/${id}/move`, { folder_id: folderId });
 
+export function getDocumentFileUrl(doc) {
+  if (!doc?.file_url) return null;
+  return `${BASE_URL}${doc.file_url}`;
+}
+
+/* ------------------------------- Study Tools ------------------------------- */
+
+export const getSummary = (id) => API.get(`/documents/${id}/summary`);
+
+export const generateSummary = (id, options = {}) =>
+  API.post(`/documents/${id}/summary`, options);
+
+export const getFlashcards = (id) => API.get(`/documents/${id}/flashcards`);
+
+export const generateFlashcards = (id, options = {}) =>
+  API.post(`/documents/${id}/flashcards`, options);
+
+export const getQuiz = (id) => API.get(`/documents/${id}/quiz`);
+
+export const generateQuiz = (id, options = {}) =>
+  API.post(`/documents/${id}/quiz`, options);
+
 export default API;

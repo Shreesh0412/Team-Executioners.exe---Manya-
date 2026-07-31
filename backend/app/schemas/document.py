@@ -4,6 +4,7 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
+    computed_field,
 )
 
 
@@ -37,6 +38,12 @@ class DocumentResponse(DocumentBase):
     user_id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def file_url(self) -> str:
+        """Relative URL the frontend can use to preview/download the PDF."""
+        return f"/static/documents/{self.filename}"
 
 
 class DocumentMove(BaseModel):
