@@ -10,6 +10,10 @@ from app.core.database import Base, engine
 from app.utils.constants import API_VERSION, APP_NAME
 from app.utils.responses import success_response
 
+# Import all models so their tables are registered on Base.metadata
+# before create_all() runs below.
+import app.models  # noqa: F401
+
 
 app = FastAPI(
     title=APP_NAME,
@@ -18,6 +22,11 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+# TEMP: create tables directly, bypassing Alembic (whose migration
+# history is out of sync with the DB). Safe to run repeatedly —
+# create_all() only creates tables that don't already exist.
+Base.metadata.create_all(bind=engine)
 
 
 app.add_middleware(
