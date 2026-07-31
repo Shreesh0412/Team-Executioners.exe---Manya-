@@ -1,103 +1,81 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { login } from "../api";
 
 function Login() {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    const [email, setEmail] = useState("");
+  async function handleLogin(e) {
+    e.preventDefault();
 
-    const [password, setPassword] = useState("");
-
-    async function handleLogin() {
     try {
-        const res = await login({
+      const res = await login({
         email,
         password,
-        });
+      });
 
-        localStorage.setItem(
+      localStorage.setItem(
         "token",
         res.data.access_token
-        );
+      );
 
-        alert("Login Successful!");
+      alert("Login Successful!");
 
-        navigate("/dashboard");
+      navigate("/dashboard");
     } catch (err) {
-        console.log(err);
-
-        alert("Invalid Email or Password");
+      console.log(err);
+      alert("Invalid Email or Password");
     }
-}
+  }
 
-    return (
+  return (
+    <div className="center-page">
+      <div className="card" style={{ width: 420 }}>
+        <h2>Login</h2>
 
-        <div
-            className="gradient center"
-            style={{
-                height: "100vh"
-            }}
-        >
+        <form onSubmit={handleLogin}>
 
-            <div
-                className="card"
-                style={{
-                    width: "400px"
-                }}
-            >
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-                <h1
-                    style={{
-                        marginBottom: "20px"
-                    }}
-                >
-                    Login
-                </h1>
+          <br /><br />
 
-                <input
-                    placeholder="Email"
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
-                    onChange={(e) =>
-                        setEmail(e.target.value)
-                    }
-                />
+          <br /><br />
 
-                <input
+          <button type="submit">
+            Login
+          </button>
 
-                    type="password"
+        </form>
 
-                    placeholder="Password"
+        <br />
 
-                    onChange={(e) =>
-                        setPassword(e.target.value)
-                    }
-                />
+        <p>
+          Don't have an account?{" "}
+          <Link to="/signup">
+            Sign Up
+          </Link>
+        </p>
 
-                <button
-
-                    className="btn"
-
-                    style={{
-                        width: "100%",
-                        marginTop: "15px"
-                    }}
-
-                    onClick={handleLogin}
-
-                >
-
-                    Login
-
-                </button>
-
-            </div>
-
-        </div>
-
-    );
-
+      </div>
+    </div>
+  );
 }
 
 export default Login;
