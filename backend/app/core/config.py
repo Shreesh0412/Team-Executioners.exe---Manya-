@@ -28,8 +28,8 @@ class Settings(BaseSettings):
     # =========================
     # File Uploads
     # =========================
-    UPLOAD_DIR: str = "uploads/documents"
-    EXTRACTED_TEXT_DIR: str = "uploads/extracted_text"
+    UPLOAD_DIR: str = "/opt/render/project/src/storage/uploads"
+    EXTRACTED_TEXT_DIR: str = "/opt/render/project/src/storage/text"
     MAX_UPLOAD_SIZE: int = 20 * 1024 * 1024  # 20 MB
 
     # =========================
