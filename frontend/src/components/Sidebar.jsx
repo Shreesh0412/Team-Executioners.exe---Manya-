@@ -1,58 +1,76 @@
-import { Link } from "react-router-dom";
-
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-    FaFolder,
-    FaHome,
-    FaFilePdf
+  FaFolderOpen,
+  FaHome,
+  FaFilePdf,
+  FaSignOutAlt,
+  FaGraduationCap,
 } from "react-icons/fa";
+import { getSessionUser, logout } from "../api";
 
-function Sidebar(){
+function Sidebar() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const user = getSessionUser();
 
-    return(
+  const links = [
+    { to: "/dashboard", label: "Dashboard", icon: <FaHome /> },
+    { to: "/organizer", label: "Organizer", icon: <FaFolderOpen /> },
+    { to: "/viewer/1", label: "Viewer", icon: <FaFilePdf /> },
+  ];
 
-        <div className="sidebar">
+  function isActive(to) {
+    if (to.startsWith("/viewer")) return location.pathname.startsWith("/viewer");
+    return location.pathname === to;
+  }
 
-            <h2
-            style={{
-                color:"#4F8EF7",
-                marginBottom:"40px"
-            }}
-            >
-                CourseMate
-            </h2>
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
 
-            <div
-            style={{
-                display:"flex",
-                flexDirection:"column",
-                gap:"25px"
-            }}
-            >
+  const initial = user?.name ? user.name.charAt(0).toUpperCase() : "?";
 
-                <Link to="/dashboard">
+  return (
+    <div className="sidebar">
+      <Link to="/" className="sidebar-logo flex" style={{ alignItems: "center", gap: 8 }}>
+        <FaGraduationCap />
+        CourseMate
+      </Link>
 
-                    <FaHome/> Dashboard
+      <div className="sidebar-nav">
+        {links.map((link) => (
+          <Link
+            key={link.to}
+            to={link.to}
+            className={`sidebar-link${isActive(link.to) ? " active" : ""}`}
+          >
+            {link.icon} {link.label}
+          </Link>
+        ))}
+      </div>
 
-                </Link>
-
-                <Link to="/organizer">
-
-                    <FaFolder/> Organizer
-
-                </Link>
-
-                <Link to="/viewer/1">
-
-                    <FaFilePdf/> Viewer
-
-                </Link>
-
+      <div className="sidebar-footer">
+        {user && (
+          <div className="sidebar-user">
+            <div className="avatar">{initial}</div>
+            <div>
+              <div className="sidebar-username">{user.name}</div>
+              <div className="sidebar-email">{user.email}</div>
             </div>
+          </div>
+        )}
 
-        </div>
-
-    );
-
+        <button
+          className="sidebar-link"
+          style={{ width: "100%", background: "none" }}
+          onClick={handleLogout}
+        >
+          <FaSignOutAlt /> Log out
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default Sidebar;

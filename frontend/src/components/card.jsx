@@ -1,29 +1,14 @@
-function Card({title,value}){
+function Card({ title, value, icon, tone = "violet" }) {
+  return (
+    <div className="card stat-card">
+      {icon && <div className={`stat-icon icon-${tone}`}>{icon}</div>}
 
-    return(
-
-        <div className="card">
-
-            <h3
-            style={{
-                marginBottom:"15px"
-            }}
-            >
-                {title}
-            </h3>
-
-            <h1
-            style={{
-                color:"#4F8EF7"
-            }}
-            >
-                {value}
-            </h1>
-
-        </div>
-
-    );
-
+      <div>
+        <div className="stat-value">{value}</div>
+        <div className="stat-label">{title}</div>
+      </div>
+    </div>
+  );
 }
 
 export default Card;
