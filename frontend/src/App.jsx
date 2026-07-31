@@ -15,7 +15,7 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/organizer" element={<Organizer />} />
-      <Route path="/viewer" element={<Viewer />} />
+      <Route path="/viewer/:id" element={<Viewer />} />
     </Routes>
   );
 }
